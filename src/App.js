@@ -49,35 +49,38 @@ function App() {
     setCompletedTodos(reducedCompleteTodo);
   }
 
-  const handelComplete = index =>{
+  const handelComplete = index => {
     const date = new Date();
     var dd = date.getDate();
     var mm = date.getMonth();
-    var yy = date.getYear();
+    var yy = date.getFullYear();
     var h = date.getHours();
     var m = date.getMinutes();
     var s = date.getSeconds();
     var completedOn = dd + '-' + mm + '-' + yy + ' at ' + h + ':' + m + ':' + s;
-
+  
     let filteredItem = {
-      ...allTodos[index],
+      ...startedTodos[index],
       completedOn: completedOn,
     };
-
+  
     let updatedCompletedArr = [...completedTodos];
     updatedCompletedArr.push(filteredItem);
     setCompletedTodos(updatedCompletedArr);
-
+    localStorage.setItem('completedTodos', JSON.stringify(updatedCompletedArr));
+  
     let reducedStartedArr = [...startedTodos];
     reducedStartedArr.splice(index, 1);
     setStartedTodos(reducedStartedArr);
-  }
+    localStorage.setItem('startedTodos', JSON.stringify(reducedStartedArr));
+  };
+  
 
   const startTodo = index =>{
     const date = new Date();
     var sdd = date.getDate();
     var smm = date.getMonth();
-    var syy = date.getYear();
+    var syy = date.getFullYear();
     var sh = date.getHours();
     var sm = date.getMinutes();
     var ss = date.getSeconds();
@@ -98,19 +101,33 @@ function App() {
   }
 
   useEffect(() => {
+    // Retrieve data from local storage
     let savedTodo = localStorage.getItem('todolist');
-    console.log('Saved Todo:', savedTodo);
+    let savedStartedTodos = localStorage.getItem('startedTodos');
+    let savedCompletedTodos = localStorage.getItem('completedTodos');
   
     try {
       savedTodo = JSON.parse(savedTodo);
+      savedStartedTodos = JSON.parse(savedStartedTodos);
+      savedCompletedTodos = JSON.parse(savedCompletedTodos);
+  
       if (savedTodo) {
         setTodos(savedTodo);
         setStartedTodos(savedTodo.filter(item => item.startedOn));
+      }
+  
+      if (savedStartedTodos) {
+        setStartedTodos(savedStartedTodos);
+      }
+  
+      if (savedCompletedTodos) {
+        setCompletedTodos(savedCompletedTodos);
       }
     } catch (error) {
       console.error('Error parsing JSON:', error);
     }
   }, []);
+  
 
   return (
     <div className="todo_App">
